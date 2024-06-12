@@ -53,3 +53,43 @@
 
 # Questions 
 **1. How to retrieve a list of people you may know based on your recent activities?**
+
+````sql
+SELECT 
+  users.user_id, 
+  users.email, 
+  users.name, 
+  users.location, 
+  users.role, 
+  users.profile_pic, 
+  users.phone_number
+FROM 
+  users
+WHERE 
+  users.user_id IN (
+    SELECT 
+      posts.user_id
+    FROM 
+      posts
+    JOIN 
+      activities ON posts.post_id = activities.post_id
+    WHERE 
+      activities.user_id = 1 AND 
+      activities.activity_name = 'Like'
+    ORDER BY 
+      activities.activity_date DESC
+  );
+````
+
+#### Answer:
+
+| user_id | email               | name         | location     | role   | profile_pic             | phone_number |
+| ------- | ------------------- | ------------ | ------------ | ------ | ----------------------- | ------------ |
+| 1       | mentor1@example.com | Mentor One   | Los Angeles  | Mentor | profile_pic_mentor1.jpg | +12135551212 |
+| 2       | mentor2@example.com | Mentor Two   | Chicago      | Mentor | profile_pic_mentor2.jpg | +13125550987 |
+| 3       | mentor3@example.com | Mentor Three | Houston      | Mentor | profile_pic_mentor3.jpg | +17135554567 |
+| 4       | mentor4@example.com | Mentor Four  | Philadelphia | Mentor | profile_pic_mentor4.jpg | +12675553210 |
+
+
+
+
