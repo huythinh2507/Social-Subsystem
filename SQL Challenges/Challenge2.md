@@ -551,3 +551,132 @@ ORDER BY count DESC;
 | Tomatoes     | 3     |
 | Peppers      | 3     |
 
+## D. Pricing and Ratings
+
+### 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
+
+````sql
+SELECT COUNT(*) AS total_pizzas_ordered
+FROM customer_orders;
+````
+
+**Answer:**
+
+| total_money|
+|---|
+|138|
+
+### 2. What if there was an additional $1 charge for any pizza extras?
+### - Add cheese is $1 extra
+
+````sql
+SELECT COUNT(*) AS total_pizzas_ordered
+FROM customer_orders;
+````
+
+**Answer:**
+
+| total_money|
+|---|
+|150|
+
+### 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
+
+````sql
+  CREATE TABLE customer_ratings (
+  "rating_id" SERIAL PRIMARY KEY,
+  "order_id" INTEGER,
+  "customer_id" INTEGER,
+  "runner_id" INTEGER,
+  "rating" INTEGER CHECK(rating >= 1 AND rating <= 5),
+  "rating_time" TIMESTAMP
+);
+
+INSERT INTO customer_ratings (order_id, customer_id, runner_id, rating, rating_time)
+VALUES 
+  (1, 101, 1, 5, '2024-06-13 08:31:59'),
+  (2, 102, 2, 4, '2024-06-14 08:31:59'),
+  (3, 103, 3, 3, '2024-06-15 08:31:59');
+````
+
+**Answer:**
+
+| rating_id | order_id | customer_id | runner_id | rating | rating_time              |
+| --------- | -------- | ----------- | --------- | ------ | ------------------------ |
+| 1         | 1        | 101         | 1         | 5      | 2024-06-13T08:31:59.000Z |
+| 2         | 2        | 102         | 2         | 4      | 2024-06-14T08:31:59.000Z |
+| 3         | 3        | 103         | 3         | 3      | 2024-06-15T08:31:59.000Z |
+| 4         | 4        | 104         | 4         | 5      | 2024-08-12T08:31:59.000Z |
+| 5         | 5        | 105         | 5         | 3      | 2024-09-11T08:31:59.000Z |
+
+### 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
+
+````sql
+SELECT 
+  co.order_id,
+  co.customer_id,
+  co.pizza_id,
+  pn.pizza_name,
+  pr.toppings,
+  co.exclusions,
+  co.extras,
+  co.order_time,
+  ro.runner_id,
+  r.registration_date,
+  ro.pickup_time,
+  ro.distance,
+  ro.duration,
+  cr.rating,
+  cr.rating_time
+FROM 
+  customer_orders co
+JOIN 
+  runner_orders ro ON co.order_id = ro.order_id
+JOIN 
+  runners r ON ro.runner_id = r.runner_id
+JOIN 
+  pizza_names pn ON co.pizza_id = pn.pizza_id
+JOIN 
+  pizza_recipes pr ON co.pizza_id = pr.pizza_id
+LEFT JOIN 
+  customer_ratings cr ON co.order_id = cr.order_id AND co.customer_id = cr.customer_id AND ro.runner_id = cr.runner_id
+WHERE 
+  ro.cancellation = '';
+
+````
+**Answer:**
+
+| order_id | customer_id | pizza_id | pizza_name | toppings                | exclusions | extras | order_time               | runner_id | registration_date        | pickup_time         | distance | duration | rating | rating_time              |
+| -------- | ----------- | -------- | ---------- | ----------------------- | ---------- | ------ | ------------------------ | --------- | ------------------------ | ------------------- | -------- | -------- | ------ | ------------------------ |
+| 5        | 104         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            | 1      | 2020-01-08T21:00:29.000Z | 3         | 2021-01-08T00:00:00.000Z | 2020-01-08 21:10:57 | 10       | 15       |        |                          |
+| 10       | 104         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 | 2, 6       | 1, 4   | 2020-01-11T18:34:49.000Z | 1         | 2021-01-01T00:00:00.000Z | 2020-01-11 18:50:20 | 10       | 10       |        |                          |
+| 3        | 102         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-02T23:51:23.000Z | 1         | 2021-01-01T00:00:00.000Z | 2020-01-03 00:12:37 | 13.4     | 20       |        |                          |
+| 4        | 103         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-04T13:23:46.000Z | 2         | 2021-01-03T00:00:00.000Z | 2020-01-04 13:53:03 | 23.4     | 40       |        |                          |
+| 8        | 102         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-09T23:54:33.000Z | 2         | 2021-01-03T00:00:00.000Z | 2020-01-10 00:15:02 | 23.4     | 15       |        |                          |
+| 10       | 104         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-11T18:34:49.000Z | 1         | 2021-01-01T00:00:00.000Z | 2020-01-11 18:50:20 | 10       | 10       |        |                          |
+| 2        | 101         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-01T19:00:52.000Z | 1         | 2021-01-01T00:00:00.000Z | 2020-01-01 19:10:54 | 20       | 27       |        |                          |
+| 1        | 101         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-01T18:05:02.000Z | 1         | 2021-01-01T00:00:00.000Z | 2020-01-01 18:15:34 | 20       | 32       | 5      | 2024-06-13T08:31:59.000Z |
+| 4        | 103         | 1        | Meatlovers | 1, 2, 3, 4, 5, 6, 8, 10 |            |        | 2020-01-04T13:23:46.000Z | 2         | 2021-01-03T00:00:00.000Z | 2020-01-04 13:53:03 | 23.4     | 40       |        |                          |
+| 3        | 102         | 2        | Vegetarian | 4, 6, 7, 9, 11, 12      |            |        | 2020-01-02T23:51:23.000Z | 1         | 2021-01-01T00:00:00.000Z | 2020-01-03 00:12:37 | 13.4     | 20       |        |                          |
+| 4        | 103         | 2        | Vegetarian | 4, 6, 7, 9, 11, 12      |            |        | 2020-01-04T13:23:46.000Z | 2         | 2021-01-03T00:00:00.000Z | 2020-01-04 13:53:03 | 23.4     | 40       |        |                          |
+| 7        | 105         | 2        | Vegetarian | 4, 6, 7, 9, 11, 12      |            | 1      | 2020-01-08T21:20:29.000Z | 2         | 2021-01-03T00:00:00.000Z | 2020-01-08 21:30:45 | 25       | 25       |        |    
+
+### 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+
+````sql
+SELECT SUM(
+  CASE 
+    WHEN pn.pizza_name = 'Meatlovers' THEN 12
+    WHEN pn.pizza_name = 'Vegetarian' THEN 10
+    ELSE 0
+  END
+) - SUM(0.30 * CAST(ro.distance AS FLOAT)) as money_left_over
+FROM customer_orders co
+JOIN pizza_names pn ON co.pizza_id = pn.pizza_id
+JOIN runner_orders ro ON co.order_id = ro.order_id AND ro.cancellation = '';
+````
+
+**Answer:**
+| money_left_over|
+|---|
+|73.38000000000001|
