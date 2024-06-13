@@ -164,59 +164,61 @@ ORDER BY customer_id ASC;
 ### 8. How many pizzas were delivered that had both exclusions and extras?
 
 ````sql
-SELECT  
-  SUM(
-    CASE WHEN exclusions IS NOT NULL AND extras IS NOT NULL THEN 1
-    ELSE 0
-    END) AS pizza_count_w_exclusions_extras
-FROM #customer_orders AS c
-JOIN #runner_orders AS r
-  ON c.order_id = r.order_id
-WHERE r.distance >= 1 
-  AND exclusions <> ' ' 
-  AND extras <> ' ';
+SELECT COUNT(*) AS pizzas_with_exclusions_and_extras
+FROM customer_orders
+JOIN runner_orders ON customer_orders.order_id = runner_orders.order_id
+WHERE (exclusions != '' AND exclusions IS NOT NULL)
+  AND (extras != '' AND extras IS NOT NULL)
+  AND (runner_orders.cancellation IS NULL OR runner_orders.cancellation = '');
+
 ````
 
 **Answer:**
+| pizzas_with_exclusions_and_extras |
+| ----------- | 
+| 1           | 
 
-![image](https://user-images.githubusercontent.com/81607668/129738278-dd3e7056-309d-42fc-a5e3-00f7b5d4609e.png)
-
-- Only 1 pizza delivered that had both extra and exclusion topping. That’s one fussy customer!
+- Only 1 pizza delivered that had both extra and exclusion topping. 
 
 ### 9. What was the total volume of pizzas ordered for each hour of the day?
 
 ````sql
-SELECT 
-  DATEPART(HOUR, [order_time]) AS hour_of_day, 
-  COUNT(order_id) AS pizza_count
-FROM #customer_orders
-GROUP BY DATEPART(HOUR, [order_time]);
+SELECT EXTRACT(HOUR FROM order_time) AS hour_of_day, COUNT(*) AS total_orders
+FROM customer_orders
+GROUP BY hour_of_day
+ORDER BY hour_of_day;
 ````
 
 **Answer:**
-
-![image](https://user-images.githubusercontent.com/81607668/129738302-573430e9-1785-4c71-adc1-464ffa94de8a.png)
-
-- Highest volume of pizza ordered is at 13 (1:00 pm), 18 (6:00 pm) and 21 (9:00 pm).
-- Lowest volume of pizza ordered is at 11 (11:00 am), 19 (7:00 pm) and 23 (11:00 pm).
+| hour_of_day     | total_orders |
+| ----------- | ----------- |
+|11           | 1          |
+|  13         | 3      |
+|   18        |3       |
+|    19       |1        |
+|    21       | 3          |
+|    23       |3         |
 
 ### 10. What was the volume of orders for each day of the week?
 
 ````sql
 SELECT 
-  FORMAT(DATEADD(DAY, 2, order_time),'dddd') AS day_of_week, -- add 2 to adjust 1st day of the week as Monday
-  COUNT(order_id) AS total_pizzas_ordered
-FROM #customer_orders
-GROUP BY FORMAT(DATEADD(DAY, 2, order_time),'dddd');
+  EXTRACT(ISODOW FROM order_time) AS day_of_week,
+  COUNT(order_id) AS volume_of_orders
+FROM 
+  customer_orders
+GROUP BY 
+  day_of_week;
 ````
 
 **Answer:**
+| day_of_week     | volume_of_orders |
+| ----------- | ----------- |
+|3          |5        |
+|  4       | 3      |
+|   6        |5      |
+|   5      |1        |
 
-![image](https://user-images.githubusercontent.com/81607668/129738331-233744f6-3b57-4f4f-9a51-f7a699a9eb2e.png)
-
-- There are 5 pizzas ordered on Friday and Monday.
-- There are 3 pizzas ordered on Saturday.
-- There is 1 pizza ordered on Sunday.
 
 ***
 
@@ -226,15 +228,24 @@ GROUP BY FORMAT(DATEADD(DAY, 2, order_time),'dddd');
 
 ````sql
 SELECT 
-  DATEPART(WEEK, registration_date) AS registration_week,
-  COUNT(runner_id) AS runner_signup
-FROM runners
-GROUP BY DATEPART(WEEK, registration_date);
+  DATE_TRUNC('week', registration_date) AS week,
+  COUNT(runner_id) AS num_runners
+FROM 
+  runners
+GROUP BY 
+  week
+ORDER BY 
+  week;
 ````
 
 **Answer:**
+| week                             | num_runners |
+| ---------------------------------| ----------- |
+|2020-12-28T00:00:00.000Z          |2            |
+|2021-01-04T00:00:00.000Z          |1            |
+|2021-01-11T00:00:00.000Z          |1            |
 
-![image](https://user-images.githubusercontent.com/81607668/129739658-a233932a-9f79-4280-a618-8bab6d3bd1f2.png)
+
 
 - On Week 1 of Jan 2021, 2 new runners signed up.
 - On Week 2 and 3 of Jan 2021, 1 new runner signed up.
@@ -242,65 +253,54 @@ GROUP BY DATEPART(WEEK, registration_date);
 ### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
 ````sql
-WITH time_taken_cte AS
-(
-  SELECT 
-    c.order_id, 
-    c.order_time, 
-    r.pickup_time, 
-    DATEDIFF(MINUTE, c.order_time, r.pickup_time) AS pickup_minutes
-  FROM #customer_orders AS c
-  JOIN #runner_orders AS r
-    ON c.order_id = r.order_id
-  WHERE r.distance != 0
-  GROUP BY c.order_id, c.order_time, r.pickup_time
-)
-
 SELECT 
-  AVG(pickup_minutes) AS avg_pickup_minutes
-FROM time_taken_cte
-WHERE pickup_minutes > 1;
+  runner_id, 
+  AVG(EXTRACT(EPOCH FROM (pickup_time::timestamp - order_time::timestamp))/60) AS avg_time_minutes
+FROM 
+  runner_orders 
+JOIN 
+  customer_orders USING(order_id)
+WHERE 
+  pickup_time <> '' AND pickup_time IS NOT NULL
+GROUP BY 
+  runner_id;
 ````
 
 **Answer:**
-
-![image](https://user-images.githubusercontent.com/81607668/129739701-e94b75e9-7193-4cf3-8e77-3c76be8b638d.png)
-
-- The average time taken in minutes by runners to arrive at Pizza Runner HQ to pick up the order is 15 minutes.
+| week                             | avg_time_minutes |
+| ---------------------------------| ----------- |
+|3          |10.466666666666667            |
+|2          |23.720000000000002            |
+|1          |15.677777777777777            |
 
 ### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
 ````sql
-WITH prep_time_cte AS
-(
-  SELECT 
-    c.order_id, 
-    COUNT(c.order_id) AS pizza_order, 
-    c.order_time, 
-    r.pickup_time, 
-    DATEDIFF(MINUTE, c.order_time, r.pickup_time) AS prep_time_minutes
-  FROM #customer_orders AS c
-  JOIN #runner_orders AS r
-    ON c.order_id = r.order_id
-  WHERE r.distance != 0
-  GROUP BY c.order_id, c.order_time, r.pickup_time
-)
-
 SELECT 
-  pizza_order, 
-  AVG(prep_time_minutes) AS avg_prep_time_minutes
-FROM prep_time_cte
-WHERE prep_time_minutes > 1
-GROUP BY pizza_order;
+  order_id,
+  COUNT(pizza_id) AS num_pizzas, 
+  AVG(EXTRACT(EPOCH FROM (pickup_time::timestamp - order_time::timestamp))/60) AS avg_prep_time_minutes
+FROM 
+  customer_orders 
+JOIN 
+  runner_orders USING(order_id)
+WHERE 
+  pickup_time <> '' AND pickup_time IS NOT NULL
+GROUP BY 
+  order_id;
 ````
-
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129739816-05e3ba03-d3fe-4206-8557-869930a897d1.png)
-
-- On average, a single pizza order takes 12 minutes to prepare.
-- An order with 3 pizzas takes 30 minutes at an average of 10 minutes per pizza.
-- It takes 16 minutes to prepare an order with 2 pizzas which is 8 minutes per pizza — making 2 pizzas in a single order the ultimate efficiency rate.
+| order_id | num_pizzas | avg_prep_time_minutes |
+| -------- | ---------- | --------------------- |
+| 1        | 1          | 10.533333333333333    |
+| 2        | 1          | 10.033333333333333    |
+| 3        | 2          | 21.233333333333334    |
+| 4        | 3          | 29.283333333333335    |
+| 5        | 1          | 10.466666666666667    |
+| 7        | 1          | 10.266666666666667    |
+| 8        | 1          | 20.483333333333334    |
+| 10       | 2          | 15.516666666666667    |
 
 ### 4. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
@@ -461,4 +461,7 @@ ORDER BY topping_count DESC;
 - Delivery duration
 - Average speed
 - Total number of pizzas
-5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after 
+
+
+
