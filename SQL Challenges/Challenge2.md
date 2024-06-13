@@ -302,166 +302,180 @@ GROUP BY
 | 8        | 1          | 20.483333333333334    |
 | 10       | 2          | 15.516666666666667    |
 
-### 4. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+### 4. What was the average distance travelled for each customer?
 
 ````sql
 SELECT 
-  c.customer_id, 
-  AVG(r.distance) AS avg_distance
-FROM #customer_orders AS c
-JOIN #runner_orders AS r
-  ON c.order_id = r.order_id
-WHERE r.duration != 0
-GROUP BY c.customer_id;
+  customer_id, 
+  AVG(CAST(distance AS FLOAT)) AS avg_distance
+FROM 
+  customer_orders 
+JOIN 
+  runner_orders USING(order_id)
+WHERE 
+  distance <> ''
+GROUP BY 
+  customer_id
+ORDER BY customer_id asc;
 ````
 
 **Answer:**
-
-![image](https://user-images.githubusercontent.com/81607668/129739847-5e338f4f-b42c-4531-9685-e2e822063183.png)
-
-_(Assuming that distance is calculated from Pizza Runner HQ to customer’s place)_
-
-- Customer 104 stays the nearest to Pizza Runner HQ at average distance of 10km, whereas Customer 105 stays the furthest at 25km.
+| customer_id | avg_distance       |
+| ----------- | ------------------ |
+| 101         | 20                 |
+| 102         | 16.733333333333334 |
+| 103         | 23.399999999999995 |
+| 104         | 10                 |
+| 105         | 25                 |
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
 
-_Edit 08/10/21: Thanks to my reader, Ankush Taneja on Medium who caught my mistake. I've amended to the correct solution. Also, I was doing this case study using SQL Server few months ago, but I'm using PostgreSQL on SQLpad now so there could be a slight difference to the syntax._
-
-Firstly, I'm going to filter results with non-null duration first just to have a feel. You can skip this step and go straight to the answer.
-
 ````sql
-SELECT 
-  order_id, duration
-FROM #runner_orders
-WHERE duration not like ' ';
+WITH durations AS (
+  SELECT order_id, CAST(duration AS INTEGER) AS duration
+  FROM runner_orders
+  WHERE duration <> '' AND cancellation = ''
+)
+SELECT MAX(duration) - MIN(duration) AS difference
+FROM durations;
 ````
-
-<img width="269" alt="image" src="https://user-images.githubusercontent.com/81607668/136523519-98efb655-d144-496b-a946-42c1c5415403.png">
-
-```sql
-SELECT MAX(duration::NUMERIC) - MIN(duration::NUMERIC) AS delivery_time_difference
-FROM runner_orders2
-where duration not like ' ';
-```
-
 **Answer:**
+| difference | 
+| ----------- |
+| 30         |             
 
-<img width="196" alt="image" src="https://user-images.githubusercontent.com/81607668/136523820-c4504a25-83f8-4236-b08e-37bf542caad0.png">
-
-- The difference between longest (40 minutes) and shortest (10 minutes) delivery time for all orders is 30 minutes.
 
 ### 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 
 ````sql
 SELECT 
-  r.runner_id, 
-  c.customer_id, 
-  c.order_id, 
-  COUNT(c.order_id) AS pizza_count, 
-  r.distance, (r.duration / 60) AS duration_hr , 
-  ROUND((r.distance/r.duration * 60), 2) AS avg_speed
-FROM #runner_orders AS r
-JOIN #customer_orders AS c
-  ON r.order_id = c.order_id
-WHERE distance != 0
-GROUP BY r.runner_id, c.customer_id, c.order_id, r.distance, r.duration
-ORDER BY c.order_id;
+  runner_id, 
+  order_id, 
+  (CAST(distance AS FLOAT) / (EXTRACT(EPOCH FROM (pickup_time::timestamp - order_time::timestamp))/3600)) AS avg_speed_kmph
+FROM 
+  customer_orders 
+JOIN 
+  runner_orders USING(order_id)
+WHERE 
+  pickup_time IS NOT NULL AND distance <> '';
 ````
-
 **Answer:**
+| runner_id | order_id | avg_speed_kmph     |
+| --------- | -------- | ------------------ |
+| 1         | 1        | 113.9240506329114  |
+| 1         | 2        | 119.60132890365449 |
+| 1         | 3        | 37.86499215070644  |
+| 1         | 3        | 37.86499215070644  |
+| 2         | 4        | 47.94536141149686  |
+| 2         | 4        | 47.94536141149686  |
+| 2         | 4        | 47.94536141149686  |
+| 3         | 5        | 57.324840764331206 |
+| 2         | 7        | 146.10389610389612 |
+| 2         | 8        | 68.54353132628152  |
+| 1         | 10       | 38.66809881847475  |
+| 1         | 10       | 38.66809881847475  |
 
-![image](https://user-images.githubusercontent.com/81607668/129739931-54127037-0879-43bf-b53f-e4a1a6ebffeb.png)
-
-_(Average speed = Distance in km / Duration in hour)_
-- Runner 1’s average speed runs from 37.5km/h to 60km/h.
-- Runner 2’s average speed runs from 35.1km/h to 93.6km/h. Danny should investigate Runner 2 as the average speed has a 300% fluctuation rate!
-- Runner 3’s average speed is 40km/h
 
 ### 7. What is the successful delivery percentage for each runner?
 
 ````sql
 SELECT 
   runner_id, 
-  ROUND(100 * SUM(
-    CASE WHEN distance = 0 THEN 0
-    ELSE 1 END) / COUNT(*), 0) AS success_perc
-FROM #runner_orders
-GROUP BY runner_id;
+  COUNT(order_id) FILTER (WHERE cancellation IS NULL OR cancellation = '') * 100.0 / COUNT(order_id) AS success_percentage
+FROM 
+  runner_orders
+GROUP BY 
+  runner_id;
 ````
-
 **Answer:**
 
-![image](https://user-images.githubusercontent.com/81607668/129740007-021d78fb-ec32-46c0-98f2-9e8f1891baed.png)
-
-- Runner 1 has 100% successful delivery.
-- Runner 2 has 75% successful delivery.
-- Runner 3 has 50% successful delivery
-
-_(It’s not right to attribute successful delivery to runners as order cancellations are out of the runner’s control.)_
-
-***
+| runner_id | success_percentage   |
+| --------- | -------------------- |
+| 3         | 50.0000000000000000  |
+| 2         | 75.0000000000000000  |
+| 1         | 100.0000000000000000 |
 
 ## C. Ingredient Optimisation
 
 ### 1. What are the standard ingredients for each pizza?
 
+````sql
+SELECT pn.pizza_name, pt.topping_name
+FROM pizza_recipes pr
+JOIN pizza_names pn ON pr.pizza_id = pn.pizza_id
+JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
+ORDER BY pn.pizza_name;
+````
+
+**Answer:**
+
+| pizza_name | topping_name |
+| ---------- | ------------ |
+| Meatlovers | Bacon        |
+| Meatlovers | BBQ Sauce    |
+| Meatlovers | Beef         |
+| Meatlovers | Cheese       |
+| Meatlovers | Chicken      |
+| Meatlovers | Mushrooms    |
+| Meatlovers | Pepperoni    |
+| Meatlovers | Salami       |
+| Vegetarian | Bacon        |
+| Vegetarian | BBQ Sauce    |
+| Vegetarian | Cheese       |
+| Vegetarian | Mushrooms    |
+| Vegetarian | Onions       |
+| Vegetarian | Peppers      |
+| Vegetarian | Tomatoes     |
+| Vegetarian | Tomato Sauce |
+
 ### 2. What was the most commonly added extra?
 
-```sql
-WITH toppings_cte AS (
-SELECT
-  pizza_id,
-  REGEXP_SPLIT_TO_TABLE(toppings, '[,\s]+')::INTEGER AS topping_id
-FROM pizza_runner.pizza_recipes)
+````sql
+SELECT pn.pizza_name, pt.topping_name
+FROM pizza_recipes pr
+JOIN pizza_names pn ON pr.pizza_id = pn.pizza_id
+JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
+ORDER BY pn.pizza_name;
+````
 
-SELECT 
-  t.topping_id, pt.topping_name, 
-  COUNT(t.topping_id) AS topping_count
-FROM toppings_cte t
-INNER JOIN pizza_runner.pizza_toppings pt
-  ON t.topping_id = pt.topping_id
-GROUP BY t.topping_id, pt.topping_name
-ORDER BY topping_count DESC;
-```
+**Answer:**
 
-**Solution**
-
-<img width="582" alt="image" src="https://user-images.githubusercontent.com/81607668/138807557-08909e2e-8201-4e53-87b8-f927928292fb.png">
+| count      | topping_name |
+| ---------- | ------------ |
+| 4          | Bacon        |
 
 ### 3. What was the most common exclusion?
 
+````sql
+SELECT pn.pizza_name, pt.topping_name
+FROM pizza_recipes pr
+JOIN pizza_names pn ON pr.pizza_id = pn.pizza_id
+JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
+ORDER BY pn.pizza_name;
+````
+
+**Answer:**
+
+| count      | topping_name     |
+| ---------- | ------------     |
+| 3          | Mushrooms        |
+
 ### 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
-- Meat Lovers
-- Meat Lovers - Exclude Beef
-- Meat Lovers - Extra Bacon
-- Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+### - Meat Lovers
+### - Meat Lovers - Exclude Beef
+### - Meat Lovers - Extra Bacon
+### - Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+````sql
+SELECT pn.pizza_name, pt.topping_name
+FROM pizza_recipes pr
+JOIN pizza_names pn ON pr.pizza_id = pn.pizza_id
+JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
+ORDER BY pn.pizza_name;
+````
 
-### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
+**Answer:**
 
-### 6. For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
-
-### 7. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
-
-***
-
-## D. Pricing and Ratings
-
-1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
-2. What if there was an additional $1 charge for any pizza extras?
-- Add cheese is $1 extra
-3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
-4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
-- customer_id
-- order_id
-- runner_id
-- rating
-- order_time
-- pickup_time
-- Time between order and pickup
-- Delivery duration
-- Average speed
-- Total number of pizzas
-5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after 
-
-
+| count      | topping_name     |
+| ---------- | ------------     |
+| 3          | Mushrooms        |
 
