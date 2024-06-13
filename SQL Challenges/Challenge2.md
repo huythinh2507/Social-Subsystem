@@ -466,16 +466,88 @@ ORDER BY pn.pizza_name;
 ### - Meat Lovers - Extra Bacon
 ### - Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
 ````sql
-SELECT pn.pizza_name, pt.topping_name
-FROM pizza_recipes pr
-JOIN pizza_names pn ON pr.pizza_id = pn.pizza_id
-JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
-ORDER BY pn.pizza_name;
+SELECT co.order_id, pn.pizza_name || 
+CASE WHEN co.exclusions <> '' THEN ' - Exclude ' || STRING_AGG(et.topping_name, ', ') ELSE '' END || 
+CASE WHEN co.extras <> '' THEN ' - Extra ' || STRING_AGG(at.topping_name, ', ') ELSE '' END as order_item
+FROM customer_orders co
+JOIN pizza_names pn ON co.pizza_id = pn.pizza_id
+LEFT JOIN pizza_toppings et ON co.exclusions LIKE '%' || et.topping_id || '%'
+LEFT JOIN pizza_toppings at ON co.extras LIKE '%' || at.topping_id || '%'
+GROUP BY co.order_id, pn.pizza_name, co.exclusions, co.extras;
+
 ````
 
 **Answer:**
 
-| count      | topping_name     |
-| ---------- | ------------     |
-| 3          | Mushrooms        |
+| order_id | order_item                                                                                           |
+| -------- | ---------------------------------------------------------------------------------------------------- |
+| 1        | Meatlovers                                                                                           |
+| 2        | Meatlovers                                                                                           |
+| 3        | Meatlovers                                                                                           |
+| 3        | Vegetarian                                                                                           |
+| 4        | Meatlovers                                                                                           |
+| 4        | Vegetarian                                                                                           |
+| 5        | Meatlovers - Extra Bacon                                                                             |
+| 6        | Vegetarian                                                                                           |
+| 7        | Vegetarian - Extra Bacon                                                                             |
+| 8        | Meatlovers                                                                                           |
+| 9        | Meatlovers - Extra Bacon, Chicken                                                                    |
+| 10       | Meatlovers                                                                                           |
+| 10       | Meatlovers - Exclude BBQ Sauce, BBQ Sauce, Mushrooms, Mushrooms - Extra Bacon, Cheese, Bacon, Cheese |
+
+### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
+### For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+
+````sql
+SELECT co.order_id, pn.pizza_name || ': ' || STRING_AGG(pt.topping_name || CASE WHEN co.extras LIKE '%' || pt.topping_id || '%' THEN ' 2x' ELSE '' END, ', ' ORDER BY pt.topping_name) as ingredients
+FROM customer_orders co
+JOIN pizza_names pn ON co.pizza_id = pn.pizza_id
+JOIN pizza_recipes pr ON co.pizza_id = pr.pizza_id
+JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
+GROUP BY co.order_id, pn.pizza_name;
+````
+**Answer:**
+
+| order_id | ingredients                                                                                                                                                    |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1        | Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami                                                                              |
+| 2        | Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami                                                                              |
+| 3        | Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami                                                                              |
+| 3        | Vegetarian: BBQ Sauce, Bacon, Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes                                                                       |
+| 4        | Meatlovers: BBQ Sauce, BBQ Sauce, Bacon, Bacon, Beef, Beef, Cheese, Cheese, Chicken, Chicken, Mushrooms, Mushrooms, Pepperoni, Pepperoni, Salami, Salami       |
+| 4        | Vegetarian: BBQ Sauce, Bacon, Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes                                                                       |
+| 5        | Meatlovers: BBQ Sauce, Bacon 2x, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami                                                                           |
+| 6        | Vegetarian: BBQ Sauce, Bacon, Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes                                                                       |
+| 7        | Vegetarian: BBQ Sauce, Bacon 2x, Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes                                                                    |
+| 8        | Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami                                                                              |
+| 9        | Meatlovers: BBQ Sauce, Bacon 2x, Beef, Cheese, Chicken 2x, Mushrooms, Pepperoni, Salami                                                                        |
+| 10       | Meatlovers: BBQ Sauce, BBQ Sauce, Bacon, Bacon 2x, Beef, Beef, Cheese 2x, Cheese, Chicken, Chicken, Mushrooms, Mushrooms, Pepperoni, Pepperoni, Salami, Salami |
+
+### 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+
+````sql
+SELECT pt.topping_name, COUNT(*) as count
+FROM runner_orders ro
+JOIN customer_orders co ON ro.order_id = co.order_id AND ro.cancellation = ''
+JOIN pizza_recipes pr ON co.pizza_id = pr.pizza_id
+JOIN pizza_toppings pt ON pr.toppings LIKE '%' || pt.topping_id || '%'
+GROUP BY pt.topping_name
+ORDER BY count DESC;
+````
+**Answer:**
+
+| topping_name | count |
+| ------------ | ----- |
+| Bacon        | 12    |
+| Mushrooms    | 12    |
+| BBQ Sauce    | 12    |
+| Cheese       | 12    |
+| Pepperoni    | 9     |
+| Chicken      | 9     |
+| Salami       | 9     |
+| Beef         | 9     |
+| Tomato Sauce | 3     |
+| Onions       | 3     |
+| Tomatoes     | 3     |
+| Peppers      | 3     |
 
