@@ -382,8 +382,48 @@ FROM sales_before, sales_after;
 **3. How do the sale metrics for these 2 periods before and after compare with the previous years in 2018 and 2019?**
 
 ````sql
-
+WITH date_ranges AS (
+  SELECT 
+    '2020-06-15'::DATE - INTERVAL '4 weeks' AS start_date_2020,
+    '2020-06-15'::DATE + INTERVAL '4 weeks' AS end_date_2020,
+    '2019-06-15'::DATE - INTERVAL '4 weeks' AS start_date_2019,
+    '2019-06-15'::DATE + INTERVAL '4 weeks' AS end_date_2019,
+    '2018-06-15'::DATE - INTERVAL '4 weeks' AS start_date_2018,
+    '2018-06-15'::DATE + INTERVAL '4 weeks' AS end_date_2018
+),
+sales_2020 AS (
+  SELECT 
+    SUM(CASE WHEN week_date BETWEEN dr.start_date_2020 AND '2020-06-15' THEN sales ELSE 0 END) AS total_sales_before_2020,
+    SUM(CASE WHEN week_date > '2020-06-15' AND week_date <= dr.end_date_2020 THEN sales ELSE 0 END) AS total_sales_after_2020
+  FROM clean_weekly_sales, (SELECT * FROM date_ranges) dr
+  WHERE week_date BETWEEN dr.start_date_2020 AND dr.end_date_2020
+),
+sales_2019 AS (
+  SELECT 
+    SUM(CASE WHEN week_date BETWEEN dr.start_date_2019 AND '2019-06-15' THEN sales ELSE 0 END) AS total_sales_before_2019,
+    SUM(CASE WHEN week_date > '2019-06-15' AND week_date <= dr.end_date_2019 THEN sales ELSE 0 END) AS total_sales_after_2019
+  FROM clean_weekly_sales, (SELECT * FROM date_ranges) dr
+  WHERE week_date BETWEEN dr.start_date_2019 AND dr.end_date_2019
+),
+sales_2018 AS (
+  SELECT 
+    SUM(CASE WHEN week_date BETWEEN dr.start_date_2018 AND '2018-06-15' THEN sales ELSE 0 END) AS total_sales_before_2018,
+    SUM(CASE WHEN week_date > '2018-06-15' AND week_date <= dr.end_date_2018 THEN sales ELSE 0 END) AS total_sales_after_2018
+  FROM clean_weekly_sales, (SELECT * FROM date_ranges) dr
+  WHERE week_date BETWEEN dr.start_date_2018 AND dr.end_date_2018
+)
+SELECT 
+  total_sales_before_2020,
+  total_sales_after_2020,
+  total_sales_before_2019,
+  total_sales_after_2019,
+  total_sales_before_2018,
+  total_sales_after_2018
+FROM sales_2020, sales_2019, sales_2018;
 ````
 
 **Answer:**
 
+| total_sales_before_2020 	| total_sales_after_2020 	| total_sales_before_2019 	| total_sales_after_2019 	| total_sales_before_2018 	| total_sales_after_2018 	|
+|-------------------------	|------------------------	|-------------------------	|------------------------	|-------------------------	|------------------------	|
+| 2915903705              	| 2334905223             	| 2249989796              	| 2252326390             	| 2125140809              	| 2129242914             	|
