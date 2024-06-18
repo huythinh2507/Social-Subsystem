@@ -1,27 +1,31 @@
 # Data sample
 **Users Table**
-| user_id | email | password | name | location | join_date | role | profile_pic | is_open_to_work |
-| ------- | ----- | -------- | ---- | -------- | --------- | ---- | ----------- | --------------- |
-| 1 | mentor1@example.com | hashedpassword | Mentor One | Los Angeles | 2024-06-12 08:00:00 | Mentor | profile_pic_mentor1.jpg | TRUE |
-| 2 | mentor2@example.com | hashedpassword | Mentor Two | Chicago | 2024-06-13 09:00:00 | Mentor | profile_pic_mentor2.jpg | FALSE |
-| 3 | mentor3@example.com | hashedpassword | Mentor Three | Houston | 2024-06-14 10:00:00 | Mentor | profile_pic_mentor3.jpg | TRUE |
-| 4 | mentor4@example.com | hashedpassword | Mentor Four | Philadelphia | 2024-06-15 11:00:00 | Mentor | profile_pic_mentor4.jpg | FALSE |
-| 5 | mentee1@example.com | hashedpassword | Mentee One | Phoenix | 2024-06-16 12:00:00 | Mentee | profile_pic_mentee1.jpg | TRUE |
-| 6 | mentee2@example.com | hashedpassword | Mentee Two | San Antonio | 2024-06-17 13:00:00 | Mentee | profile_pic_mentee2.jpg | FALSE |
-| 7 | mentee3@example.com | hashedpassword | Mentee Three | San Diego | 2024-06-18 14:00:00 | Mentee | profile_pic_mentee3.jpg | TRUE |
-| 8 | mentee4@example.com | hashedpassword | Mentee Four | Dallas | 2024-06-19 15:00:00 | Mentee | profile_pic_mentee4.jpg | FALSE |
+| user_id 	| email                  	| password       	| name           	| location     	| join_date           	| role   	| profile_pic             	| is_open_to_work 	| phone_number 	|
+|---------	|------------------------	|----------------	|----------------	|--------------	|---------------------	|--------	|-------------------------	|-----------------	|--------------	|
+| 1       	| mentor.one@gmail.com   	| hashedpassword 	| John Smith     	| Los Angeles  	| 2024-06-12 08:00:00 	| Mentor 	| profile_pic_mentor1.jpg 	| 1               	| +12135551212 	|
+| 2       	| mentor.two@gmail.com   	| hashedpassword 	| Jane Doe       	| Chicago      	| 2024-06-13 09:00:00 	| Mentor 	| profile_pic_mentor2.jpg 	| 0               	| +13125550987 	|
+| 3       	| mentor.three@gmail.com 	| hashedpassword 	| Alice Lee      	| Houston      	| 2024-06-14 10:00:00 	| Mentor 	| profile_pic_mentor3.jpg 	| 1               	| +17135554567 	|
+| 4       	| mentor.four@gmail.com  	| hashedpassword 	| David Kim      	| Philadelphia 	| 2024-06-15 11:00:00 	| Mentor 	| profile_pic_mentor4.jpg 	| 0               	| +12675553210 	|
+| 5       	| mentee.one@gmail.com   	| hashedpassword 	| Sarah Jones    	| Phoenix      	| 2024-06-16 12:00:00 	| Mentee 	| profile_pic_mentee1.jpg 	| 1               	| +16025557890 	|
+| 6       	| mentee.two@gmail.com   	| hashedpassword 	| William Miller 	| San Antonio  	| 2024-06-17 13:00:00 	| Mentee 	| profile_pic_mentee2.jpg 	| 0               	| +12105556543 	|
+| 7       	| mentee.three@gmail.com 	| hashedpassword 	| Olivia Brown   	| San Diego    	| 2024-06-18 14:00:00 	| Mentee 	| profile_pic_mentee3.jpg 	| 1               	| +16195552345 	|
+| 8       	| mentee.four@gmail.com  	| hashedpassword 	| Charles Garcia 	| Dallas       	| 2024-06-19 15:00:00 	| Mentee 	| profile_pic_mentee4.jpg 	| 0               	| +14695559876 	|
+| 9       	| mentee.five@gmail.com  	| hashedpassword 	| Emily Martinez 	| Phoenix      	| 2024-06-20 16:00:00 	| Mentee 	| profile_pic_mentee5.jpg 	| 1               	| +16235551234 	|
+| 10      	| mentee.six@gmail.com   	| hashedpassword 	| David Smith    	| Philadelphia 	| 2024-06-21 17:00:00 	| Mentee 	| profile_pic_mentee6.jpg 	| 0               	| +13525557689 	|
 
 **Profiles Table**
-| profile_id 	| user_id 	| current_position          	| skills                         	| experience                  	| education                  	|
-|------------	|---------	|---------------------------	|--------------------------------	|-----------------------------	|----------------------------	|
-| 1          	| 1       	| Senior Software Developer 	| JavaScript, Python             	| 10 years at TechCorp        	| BSc Computer Science       	|
-| 2          	| 2       	| HR Manager                	| Recruiting, Employee Relations 	| 5 years at HR Inc.          	| MA Human Resources         	|
-| 3          	| 3       	| Senior Data Scientist     	| Python, R, SQL                 	| 8 years at DataCorp         	| MSc Data Science           	|
-| 4          	| 4       	| Senior HR Manager         	| Recruiting, Employee Relations 	| 7 years at HR Solutions     	| MA Human Resources         	|
-| 5          	| 5       	| Junior Software Developer 	| JavaScript                     	| 1 year at StartUp           	| BSc Computer Science       	|
-| 6          	| 6       	| HR Associate              	| Recruiting                     	| 2 years at HR Inc.          	| BA Human Resources         	|
-| 7          	| 7       	| Junior Data Analyst       	| Python, SQL                    	| 1 year at DataStart         	| BSc Data Science           	|
-| 8          	| 8       	| Office Assistant          	| Organizational Skills          	| 2 years at Office Solutions 	| BA Business Administration 	|
+| profile_id 	| user_id 	| current_position          	| skills                         	| experience                  	| education                  	| Industry        	|
+|------------	|---------	|---------------------------	|--------------------------------	|-----------------------------	|----------------------------	|-----------------	|
+| 1          	| 1       	| Senior Software Developer 	| JavaScript, Python             	| 10 years at TechCorp        	| BSc Computer Science       	| Technology      	|
+| 2          	| 2       	| HR Manager                	| Recruiting, Employee Relations 	| 5 years at HR Inc.          	| MA Human Resources         	| Human Resources 	|
+| 3          	| 3       	| Senior Data Scientist     	| Python, R, SQL                 	| 8 years at DataCorp         	| MSc Data Science           	| Data Science    	|
+| 4          	| 4       	| Senior HR Manager         	| Recruiting, Employee Relations 	| 7 years at HR Solutions     	| MA Human Resources         	| Human Resources 	|
+| 5          	| 5       	| Junior Software Developer 	| JavaScript                     	| 1 year at StartUp           	| BSc Computer Science       	| Technology      	|
+| 6          	| 6       	| HR Associate              	| Recruiting                     	| 2 years at HR Inc.          	| BA Human Resources         	| Human Resources 	|
+| 7          	| 7       	| Junior Data Analyst       	| Python, SQL                    	| 1 year at DataStart         	| BSc Data Science           	| Data Science    	|
+| 8          	| 8       	| Office Assistant          	| Organizational Skills          	| 2 years at Office Solutions 	| BA Business Administration 	| Administration  	|
+| 9          	| 9       	| Marketing Director        	| Advertising, Brand Management  	| 12 years at MarketGurus     	| MBA Marketing              	| Marketing       	|
+| 10         	| 10      	| Civil Engineer            	| Project Management, CAD        	| 6 years at BuildRight       	| MEng Civil Engineering     	| Construction    	|
 
 **Posts Table**
 | post_id 	| user_id 	| content                                             	| post_date           	| views 	| likes 	| shares 	| comments 	|
@@ -104,3 +108,17 @@
 | 1            	| 1       	| 2       	|
 | 2            	| 1       	| 3       	|
 | 3            	| 2       	| 3       	|
+
+**Job**
+| user_id 	| email                  	| password       	| name           	| location     	| join_date           	| role   	| profile_pic             	| is_open_to_work 	| phone_number 	|
+|---------	|------------------------	|----------------	|----------------	|--------------	|---------------------	|--------	|-------------------------	|-----------------	|--------------	|
+| 1       	| mentor.one@gmail.com   	| hashedpassword 	| John Smith     	| Los Angeles  	| 2024-06-12 08:00:00 	| Mentor 	| profile_pic_mentor1.jpg 	| 1               	| +12135551212 	|
+| 2       	| mentor.two@gmail.com   	| hashedpassword 	| Jane Doe       	| Chicago      	| 2024-06-13 09:00:00 	| Mentor 	| profile_pic_mentor2.jpg 	| 0               	| +13125550987 	|
+| 3       	| mentor.three@gmail.com 	| hashedpassword 	| Alice Lee      	| Houston      	| 2024-06-14 10:00:00 	| Mentor 	| profile_pic_mentor3.jpg 	| 1               	| +17135554567 	|
+| 4       	| mentor.four@gmail.com  	| hashedpassword 	| David Kim      	| Philadelphia 	| 2024-06-15 11:00:00 	| Mentor 	| profile_pic_mentor4.jpg 	| 0               	| +12675553210 	|
+| 5       	| mentee.one@gmail.com   	| hashedpassword 	| Sarah Jones    	| Phoenix      	| 2024-06-16 12:00:00 	| Mentee 	| profile_pic_mentee1.jpg 	| 1               	| +16025557890 	|
+| 6       	| mentee.two@gmail.com   	| hashedpassword 	| William Miller 	| San Antonio  	| 2024-06-17 13:00:00 	| Mentee 	| profile_pic_mentee2.jpg 	| 0               	| +12105556543 	|
+| 7       	| mentee.three@gmail.com 	| hashedpassword 	| Olivia Brown   	| San Diego    	| 2024-06-18 14:00:00 	| Mentee 	| profile_pic_mentee3.jpg 	| 1               	| +16195552345 	|
+| 8       	| mentee.four@gmail.com  	| hashedpassword 	| Charles Garcia 	| Dallas       	| 2024-06-19 15:00:00 	| Mentee 	| profile_pic_mentee4.jpg 	| 0               	| +14695559876 	|
+| 9       	| mentee.five@gmail.com  	| hashedpassword 	| Emily Martinez 	| Phoenix      	| 2024-06-20 16:00:00 	| Mentee 	| profile_pic_mentee5.jpg 	| 1               	| +16235551234 	|
+| 10      	| mentee.six@gmail.com   	| hashedpassword 	| David Smith    	| Philadelphia 	| 2024-06-21 17:00:00 	| Mentee 	| profile_pic_mentee6.jpg 	| 0               	| +13525557689 	|
