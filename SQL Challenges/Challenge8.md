@@ -195,42 +195,38 @@ FROM fresh_segments.interest_metrics;
 There are 14 distinct `month_year` dates and 1202 distinct `interest_id`s.
 
 ```sql
-WITH interest_cte AS (
 SELECT 
-  interest_id, 
-  COUNT(DISTINCT month_year) AS total_months
-FROM fresh_segments.interest_metrics
-WHERE month_year IS NOT NULL
-GROUP BY interest_id
-)
-
-SELECT 
-  c.total_months,
-  COUNT(DISTINCT c.interest_id)
-FROM interest_cte c
+  total_months,
+  COUNT(DISTINCT interest_id) AS interest_count
+FROM (
+  SELECT 
+    interest_id, 
+    COUNT(DISTINCT month_year) AS total_months
+  FROM fresh_segments.interest_metrics
+  WHERE month_year IS NOT NULL
+  GROUP BY interest_id
+) AS subquery
 WHERE total_months = 14
-GROUP BY c.total_months
-ORDER BY count DESC;
+GROUP BY total_months
+ORDER BY interest_count DESC;
+
 ```
-
-<img width="263" alt="image" src="https://user-images.githubusercontent.com/81607668/139029765-3403fb8b-e93d-4fde-989b-b648d62fcb3f.png">
-
-480 interests out of 1202 interests are present in all the `month_year` dates.
+| total_months 	| interest_count 	|
+|--------------	|----------------	|
+| 14           	| 480            	|
 
 ***
   
 **2. Using this same total_months measure - calculate the cumulative percentage of all records starting at 14 months - which total_months value passes the 90% cumulative percentage value?**
 
-Find out the point in which interests present in a particular number of months are not performing well. For example, interest id 101 only appeared in 6 months due to non or lack of clicks and interactions, so we can consider to cut the interest off. 
-
 ```sql
 WITH cte_interest_months AS (
-SELECT
-  interest_id,
-  MAX(DISTINCT month_year) AS total_months
-FROM fresh_segments.interest_metrics
-WHERE interest_id IS NOT NULL
-GROUP BY interest_id
+  SELECT
+    interest_id,
+    COUNT(DISTINCT month_year) AS total_months
+  FROM fresh_segments.interest_metrics
+  WHERE interest_id IS NOT NULL
+  GROUP BY interest_id
 ),
 cte_interest_counts AS (
   SELECT
@@ -238,22 +234,51 @@ cte_interest_counts AS (
     COUNT(DISTINCT interest_id) AS interest_count
   FROM cte_interest_months
   GROUP BY total_months
+),
+cte_cumulative AS (
+  SELECT
+    total_months,
+    interest_count,
+    ROUND(100 * SUM(interest_count) OVER (ORDER BY total_months DESC) /
+        (SUM(interest_count) OVER ()),2) AS cumulative_percentage
+  FROM cte_interest_counts
 )
 
-SELECT
-  total_months,
-  interest_count,
-  ROUND(100 * SUM(interest_count) OVER (ORDER BY total_months DESC) / -- Create running total field using cumulative values of interest count
-      (SUM(INTEREST_COUNT) OVER ()),2) AS cumulative_percentage
-FROM cte_interest_counts;
+SELECT *
+FROM cte_cumulative
+WHERE cumulative_percentage > 90;
 ```
 
-<img width="446" alt="image" src="https://user-images.githubusercontent.com/81607668/139035737-cfe32a44-5c48-4376-a9bc-96c15daf162b.png">
+| total_months 	| interest_count 	| cumulative_percentage 	|
+|--------------	|----------------	|-----------------------	|
+| 6            	| 33             	| 90.85                 	|
+| 5            	| 38             	| 94.01                 	|
+| 4            	| 32             	| 96.67                 	|
+| 3            	| 15             	| 97.92                 	|
+| 2            	| 12             	| 98.92                 	|
+| 1            	| 13             	| 100.00                	|
 
-Interests with total months of 6 and above received a 90% and above percentage. Interests below this mark should be investigated to improve their clicks and customer interactions. 
-***
 
 **3. If we were to remove all `interest_id` values which are lower than the `total_months` value we found in the previous question - how many total data points would we be removing?**
+
+```sql
+with month_counts as
+(
+select interest_id, count(distinct month_year) as month_count
+from 
+fresh_segments.interest_metrics
+group by interest_id
+having count(distinct month_year) <6 
+)
+
+--getting the number of times the above interest ids are present in the interest_metrics table
+select count(interest_id) as interest_record_to_remove
+from fresh_segments.interest_metrics
+where interest_id in (select interest_id from month_counts)
+```
+| interest_record_to_remove 	|
+|---------------------------	|
+| 400                       	|
 
 ***
 
@@ -267,7 +292,66 @@ Interests with total months of 6 and above received a 90% and above percentage. 
 
 ## 🧩 C. Segment Analysis
  
-1. Using the complete dataset - which are the top 10 and bottom 10 interests which have the largest composition values in any month_year? Only use the maximum composition value for each interest but you must keep the corresponding month_year
+**1. Using the complete dataset - which are the top 10 and bottom 10 interests which have the largest composition values in any month_year? Only use the maximum composition value for each interest but you must keep the corresponding month_year**
+```sql
+CREATE TABLE filtered_table AS
+SELECT *
+FROM fresh_segments.interest_metrics
+WHERE interest_id IN (
+  SELECT interest_id
+  FROM (
+    SELECT interest_id, COUNT(DISTINCT month_year) AS month_count
+    FROM fresh_segments.interest_metrics
+    GROUP BY interest_id
+    HAVING COUNT(DISTINCT month_year) >= 6 
+  ) AS cte
+);
+-- Querying from filtered_table
+
+-- For top 10 
+SELECT month_year, f.interest_id, interest_name, MAX(composition) AS max_composition
+FROM filtered_table f
+JOIN fresh_segments.interest_map ma ON f.interest_id = ma.id::VARCHAR -- Cast integer to VARCHAR
+GROUP BY month_year, f.interest_id, interest_name
+ORDER BY max_composition DESC
+LIMIT 10;
+
+-- For bottom 10
+SELECT month_year, f.interest_id, interest_name, MAX(composition) AS max_composition
+FROM filtered_table f
+JOIN fresh_segments.interest_map ma ON f.interest_id = ma.id::VARCHAR -- Cast integer to VARCHAR
+GROUP BY month_year, f.interest_id, interest_name
+ORDER BY max_composition ASC
+LIMIT 10;
+```
+| month_year 	| interest_id 	| interest_name                     	| max_composition 	|
+|------------	|-------------	|-----------------------------------	|-----------------	|
+| 12-2018    	| 21057       	| Work Comes First Travelers        	| 21.2            	|
+| 10-2018    	| 21057       	| Work Comes First Travelers        	| 20.28           	|
+| 11-2018    	| 21057       	| Work Comes First Travelers        	| 19.45           	|
+| 01-2019    	| 21057       	| Work Comes First Travelers        	| 18.99           	|
+| 07-2018    	| 6284        	| Gym Equipment Owners              	| 18.82           	|
+| 02-2019    	| 21057       	| Work Comes First Travelers        	| 18.39           	|
+| 09-2018    	| 21057       	| Work Comes First Travelers        	| 18.18           	|
+| 07-2018    	| 39          	| Furniture Shoppers                	| 17.44           	|
+| 07-2018    	| 77          	| Luxury Retail Shoppers            	| 17.19           	|
+| 10-2018    	| 12133       	| Luxury Boutique Hotel Researchers 	| 15.15           	|
+
+| month_year 	| interest_id 	| interest_name                	| max_composition 	|
+|------------	|-------------	|------------------------------	|-----------------	|
+| 05-2019    	| 45524       	| Mowing Equipment Shoppers    	| 1.51            	|
+| 05-2019    	| 20768       	| Beer Aficionados             	| 1.52            	|
+| 04-2019    	| 44449       	| United Nations Donors        	| 1.52            	|
+| 05-2019    	| 39336       	| Philadelphia 76ers Fans      	| 1.52            	|
+| 06-2019    	| 35742       	| Disney Fans                  	| 1.52            	|
+| 06-2019    	| 34083       	| New York Giants Fans         	| 1.52            	|
+| 05-2019    	| 4918        	| Gastrointestinal Researchers 	| 1.52            	|
+| 05-2019    	| 6127        	| LED Lighting Shoppers        	| 1.53            	|
+| 05-2019    	| 36877       	| Crochet Enthusiasts          	| 1.53            	|
+| 06-2019    	| 6314        	| Online Directory Searchers   	| 1.53            	|
+
+***
+
 2. Which 5 interests had the lowest average ranking value?
 3. Which 5 interests had the largest standard deviation in their percentile_ranking value?
 4. For the 5 interests found in the previous question - what was minimum and maximum percentile_ranking values for each interest and its corresponding year_month value? Can you describe what is happening for these 5 interests?
