@@ -164,7 +164,7 @@ FROM (
 
 ***
 
-## 👚 C. Product Analysis
+## C. Product Analysis
 
 **1. What are the top 3 products by total revenue before discount?**
 
