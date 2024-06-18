@@ -89,4 +89,21 @@ WHERE
 | 3       | mentor.three@gmail.com | Alice Lee | Mentor | profile_pic_mentor3.jpg | +17135554567 |
 | 4       | mentor.four@gmail.com  | David Kim | Mentor | profile_pic_mentor4.jpg | +12675553210 |
 
+**3. List of connection**
+````sql
+SELECT u.*
+FROM users u
+JOIN Connection c ON u.user_id = c.User1ID OR u.user_id = c.User2ID
+WHERE c.User1ID = 1 OR c.User2ID = 1;
+````
+
+#### Answer:
+
+| user_id 	| email                  	| password       	| name       	| location    	| join_date           	| role   	| profile_pic             	| is_open_to_work 	| phone_number 	|
+|---------	|------------------------	|----------------	|------------	|-------------	|---------------------	|--------	|-------------------------	|-----------------	|--------------	|
+| 1       	| mentor.one@gmail.com   	| hashedpassword 	| John Smith 	| Los Angeles 	| 2024-06-12 08:00:00 	| Mentor 	| profile_pic_mentor1.jpg 	| 1               	| +12135551212 	|
+| 2       	| mentor.two@gmail.com   	| hashedpassword 	| Jane Doe   	| Chicago     	| 2024-06-13 09:00:00 	| Mentor 	| profile_pic_mentor2.jpg 	| 0               	| +13125550987 	|
+| 1       	| mentor.one@gmail.com   	| hashedpassword 	| John Smith 	| Los Angeles 	| 2024-06-12 08:00:00 	| Mentor 	| profile_pic_mentor1.jpg 	| 1               	| +12135551212 	|
+| 3       	| mentor.three@gmail.com 	| hashedpassword 	| Alice Lee  	| Houston     	| 2024-06-14 10:00:00 	| Mentor 	| profile_pic_mentor3.jpg 	| 1               	| +17135554567 	|
+
 
