@@ -453,8 +453,114 @@ LIMIT 10
 The `index_value` is a measure which can be used to reverse calculate the average composition for Fresh Segments’ clients. Average composition can be calculated by dividing the composition column by the index_value column rounded to 2 decimal places.
 
 1. What is the top 10 interests by the average composition for each month?
+```sql
+CREATE VIEW metric_with_avg_composition AS
+SELECT
+    *,
+    ROUND(CAST((composition/index_value) AS numeric),2) AS avg_composition
+FROM fresh_segments.interest_metrics;
+
+SELECT
+	month_year,
+    interest_id,
+    avg_composition,
+    RANK() OVER(PARTITION BY month_year ORDER BY avg_composition DESC) AS ranking
+FROM metric_with_avg_composition
+WHERE ranking <= 10
+ORDER BY month_year
+LIMIT 10;
+```
+| month_year 	| interest_id 	| avg_composition 	| ranking 	|
+|------------	|-------------	|-----------------	|---------	|
+| 01-2019    	| 21057       	| 7.66            	| 1       	|
+| 01-2019    	| 5970        	| 2.63            	| 2       	|
+| 01-2019    	| 41548       	| 2.43            	| 3       	|
+| 01-2019    	| 6206        	| 2.32            	| 4       	|
+| 01-2019    	| 6285        	| 2.24            	| 5       	|
+| 01-2019    	| 115         	| 2.12            	| 6       	|
+| 01-2019    	| 4           	| 2.04            	| 7       	|
+| 01-2019    	| 171         	| 2.02            	| 8       	|
+| 01-2019    	| 42203       	| 1.82            	| 9       	|
+| 01-2019    	| 6218        	| 1.50            	| 10      	|
+
 2. For all of these top 10 interests - which interest appears the most often?
+```sql
+CREATE VIEW metric_with_avg_composition AS
+SELECT
+    *,
+    ROUND(CAST((composition/index_value) AS numeric),2) AS avg_composition
+FROM fresh_segments.interest_metrics;
+
+WITH cte AS
+(SELECT
+	month_year,
+    interest_id,
+    RANK() OVER(PARTITION BY month_year ORDER BY avg_composition DESC) AS ranking
+FROM metric_with_avg_composition
+WHERE ranking <= 10
+ORDER BY month_year)
+SELECT
+	interest_id,
+    COUNT(*) AS frequency
+FROM cte
+GROUP BY interest_id
+ORDER BY frequency DESC
+LIMIT 10
+
+```
+| interest_id 	| frequency 	|
+|-------------	|-----------	|
+| 115         	| 13        	|
+| 171         	| 11        	|
+| null        	| 10        	|
+| 6206        	| 10        	|
+| 22502       	| 9         	|
+| 41548       	| 9         	|
+| 42203       	| 9         	|
+| 6285        	| 9         	|
+| 4           	| 8         	|
+| 6218        	| 6         	|
+
 3. What is the average of the average composition for the top 10 interests for each month?
+```sql
+CREATE VIEW metric_with_avg_composition AS
+SELECT
+    *,
+    ROUND(CAST((composition/index_value) AS numeric),2) AS avg_composition
+FROM fresh_segments.interest_metrics;
+
+WITH cte AS
+(SELECT
+	month_year,
+    interest_id,
+    avg_composition,
+    RANK() OVER(PARTITION BY month_year ORDER BY avg_composition DESC) AS ranking
+FROM metric_with_avg_composition
+WHERE ranking <= 10
+ORDER BY month_year)
+SELECT
+	month_year,
+    ROUND(AVG(avg_composition),2) AS avg_composition_each_month
+FROM cte
+GROUP BY month_year;
+```
+| month_year 	| avg_composition_each_month 	|
+|------------	|----------------------------	|
+| 01-2019    	| 2.68                       	|
+| 02-2019    	| 2.80                       	|
+| 03-2019    	| 2.24                       	|
+| 04-2019    	| 1.90                       	|
+| 05-2019    	| 1.26                       	|
+| 06-2019    	| 1.14                       	|
+| 07-2018    	| 2.07                       	|
+| 07-2019    	| 1.31                       	|
+| 08-2018    	| 2.67                       	|
+| 08-2019    	| 1.58                       	|
+| 09-2018    	| 2.22                       	|
+| 10-2018    	| 2.50                       	|
+| 11-2018    	| 1.92                       	|
+| 12-2018    	| 2.10                       	|
+| null       	| 2.25                       	|
 4. What is the 3 month rolling average of the max average composition value from September 2018 to August 2019 and include the previous top ranking interests in the same output shown below.
 5. Provide a possible reason why the max average composition might change from month to month? Could it signal something is not quite right with the overall business model for Fresh Segments?
 
