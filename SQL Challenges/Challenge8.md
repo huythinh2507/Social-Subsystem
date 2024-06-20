@@ -353,9 +353,98 @@ LIMIT 10;
 ***
 
 2. Which 5 interests had the lowest average ranking value?
+```sql
+SELECT
+    DISTINCT interest_id,
+    AVG(ranking) OVER(PARTITION BY interest_id) AS avg_ranking
+FROM
+    filtered_table
+ORDER BY avg_ranking
+LIMIT 5
+```
+| interest_id 	| avg_ranking            	|
+|-------------	|------------------------	|
+| 41548       	| 1.00000000000000000000 	|
+| 42203       	| 4.1111111111111111     	|
+| 115         	| 5.9285714285714286     	|
+| 171         	| 9.3571428571428571     	|
+| 6206        	| 11.8571428571428571    	|
+
 3. Which 5 interests had the largest standard deviation in their percentile_ranking value?
+```sql
+SELECT
+    interest_id,
+	STDDEV(percentile_ranking) AS standard_deviation
+FROM
+    filtered_table
+GROUP BY interest_id
+ORDER BY standard_deviation DESC
+LIMIT 5
+```
+| interest_id 	| standard_deviation 	|
+|-------------	|--------------------	|
+| 23          	| 30.175047086403474 	|
+| 20764       	| 28.97491995962485  	|
+| 38992       	| 28.318455623301364 	|
+| 43546       	| 26.242685919808476 	|
+| 10839       	| 25.612267373272523 	|
+
 4. For the 5 interests found in the previous question - what was minimum and maximum percentile_ranking values for each interest and its corresponding year_month value? Can you describe what is happening for these 5 interests?
+```sql
+WITH top_5_stddev AS
+(SELECT
+    interest_id,
+	STDDEV(percentile_ranking) AS standard_deviation
+FROM
+    filtered_table
+GROUP BY interest_id
+ORDER BY standard_deviation DESC
+LIMIT 5)
+SELECT
+	interest_id,
+    MIN(percentile_ranking) AS minimum_pr,
+    MAX(percentile_ranking) AS maximum_pr
+FROM filtered_table
+WHERE interest_id IN (SELECT interest_id FROM top_5_stddev)
+GROUP BY interest_id
+```
+| interest_id 	| minimum_pr 	| maximum_pr 	|
+|-------------	|------------	|------------	|
+| 43546       	| 5.7        	| 73.15      	|
+| 23          	| 7.92       	| 86.69      	|
+| 20764       	| 11.23      	| 86.15      	|
+| 38992       	| 2.2        	| 82.44      	|
+| 10839       	| 4.84       	| 75.03      	|
+
 5. How would you describe our customers in this segment based off their composition and ranking values? What sort of products or services should we show to these customers and what should we avoid?
+```sql
+SELECT
+	interest_id,
+    interest_name,
+    interest_summary,
+    AVG(composition) AS avg_composition,
+    AVG(ranking) AS avg_ranking
+FROM
+	filtered_table AS filtered_metric
+JOIN fresh_segments.interest_map AS map ON filtered_metric.interest_id = map.id
+GROUP BY interest_id,
+		interest_name,
+		interest_summary
+ORDER BY avg_composition DESC, avg_ranking ASC
+LIMIT 10
+```
+| interest_id 	| interest_name                                	| interest_summary                                                                                                                                 	| avg_composition 	| avg_ranking 	|
+|-------------	|----------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------	|-----------------	|-------------	|
+| 21057       	| Work Comes First Travelers                   	| People looking to book a hotel who travel frequently for business and vacation.                                                                  	| 17.5            	| 47.5        	|
+| 5969        	| Luxury Bedding Shoppers                      	| Consumers shopping for luxury bedding.                                                                                                           	| 11.1            	| 59          	|
+| 6284        	| Gym Equipment Owners                         	| People researching and comparing fitness trends and techniques. These consumers are more likely to spend money on gym equipment for their homes. 	| 10.5            	| 50.1        	|
+| 12133       	| Luxury Boutique Hotel Researchers            	| Consumers comparing or purchasing accommodations at luxury, boutique hotels.                                                                     	| 10.4            	| 28.9        	|
+| 77          	| Luxury Retail Shoppers                       	| Consumers shopping for high end fashion apparel and accessories.                                                                                 	| 9.8             	| 71.9        	|
+| 19298       	| Beach Supplies Shoppers                      	| Consumers shopping for beach supplies.                                                                                                           	| 9.5             	| 35.6        	|
+| 39          	| Furniture Shoppers                           	| Consumers shopping for major home furnishings.                                                                                                   	| 9.5             	| 62.2        	|
+| 6286        	| Luxury Hotel Guests                          	| High income individuals researching and booking hotel rooms.                                                                                     	| 9.3             	| 36.4        	|
+| 64          	| High-End Kids Furniture and Clothes Shoppers 	| People shopping at high end childrens clothing and toy retailers.                                                                                	| 8.9             	| 80          	|
+| 10977       	| Christmas Celebration Researchers            	| People reading online about Christmas celebration ideas.                                                                                         	| 8.6             	| 121         	|
 
 ***
 
