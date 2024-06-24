@@ -44,32 +44,32 @@
 | 12      	| 8       	| Enjoying my work as an office assistant.            	| 2024-06-27 17:00:00 	| 175   	| 35    	| 8      	| 16       	|
 
 **PlatformRating Table**
-| rating_id | user_id | rating | comment | rating_date |
-| --------- | ------- | ------ | ------- | ----------- |
-| 1 | 1 | 5 | Great platform! | 2024-06-10 10:00:00 |
-| 2 | 2 | 4 | Good experience overall. | 2024-06-11 11:00:00 |
+| rating_id | user_id | rating | comment                  | rating_date         |
+|-----------|---------|--------|--------------------------|---------------------|
+| 1         | 1       | 5      | Great platform!          | 2024-06-10 10:00:00 |
+| 2         | 2       | 4      | Good experience overall. | 2024-06-11 11:00:00 |
 
 **Tag Table**
-| tag_name | usage_count | last_used |
-| -------- | ----------- | --------- |
-| Software Development | 100 | 2024-06-10 10:00:00 |
-| Human Resources | 50 | 2024-06-11 11:00:00 |
-| Marketing | 75 | 2024-06-12 14:00:00 |
-| Data Science | 120 | 2024-06-13 16:00:00 |
-| Machine Learning | 85 | 2024-06-14 15:00:00 |
-| Artificial Intelligence | 90 | 2024-06-15 17:00:00 |
-| Cybersecurity | 80 | 2024-06-16 18:00:00 |
-| Cloud Computing | 95 | 2024-06-17 19:00:00 |
-| Web Development | 110 | 2024-06-18 20:00:00 |
-| Mobile Development | 105 | 2024-06-19 21:00:00 |
+| tag_name                | usage_count | last_used           |
+|-------------------------|-------------|---------------------|
+| Software Development    | 100         | 2024-06-10 10:00:00 |
+| Human Resources         | 50          | 2024-06-11 11:00:00 |
+| Marketing               | 75          | 2024-06-12 14:00:00 |
+| Data Science            | 120         | 2024-06-13 16:00:00 |
+| Machine Learning        | 85          | 2024-06-14 15:00:00 |
+| Artificial Intelligence | 90          | 2024-06-15 17:00:00 |
+| Cybersecurity           | 80          | 2024-06-16 18:00:00 |
+| Cloud Computing         | 95          | 2024-06-17 19:00:00 |
+| Web Development         | 110         | 2024-06-18 20:00:00 |
+| Mobile Development      | 105         | 2024-06-19 21:00:00 |
 
 **Challenges Table**
-| ChallengeID | UserID | Name | Location | Duration | StartTime |
-| ----------- | ------ | ---- | -------- | -------- | --------- |
-| 1 | 1 | Catch Rare Pokémon | Viridian Forest | 90min | NOW() + INTERVAL 1 HOUR |
-| 2 | 2 | Win Pokémon Contest | Cerulean City | 90min | NOW() + INTERVAL 2 HOUR |
-| 3 | 3 | Defeat Elite Four | Indigo Plateau | 90min | NOW() + INTERVAL 3 HOUR |
-| 4 | 4 | Complete Pokédex | Pallet Town | 90min | 2024-06-13 16:00:00 |
+| ChallengeID | UserID | Name                | Location        | Duration | StartTime           | Category    | Description                        | Phase           |
+|-------------|--------|---------------------|-----------------|----------|---------------------|-------------|------------------------------------|-----------------|
+| 1           | 1      | Catch Rare Pokémon  | Viridian Forest | 90min    | 2024-06-13 16:00:00 | Adventure   | Find elusive Pokémon in the forest | Exploration     |
+| 2           | 2      | Win Pokémon Contest | Cerulean City   | 90min    | 2024-06-13 16:00:00 | Competition | Show off your Pokémon skills       | Performance     |
+| 3           | 3      | Defeat Elite Four   | Indigo Plateau  | 90min    | 2024-06-13 16:00:00 | Challenge   | Prove your strength in battles     | Final Challenge |
+| 4           | 4      | Complete Pokédex    | Pallet Town     | 90min    | 2024-06-13 16:00:00 | Collection  | Capture all Pokémon species        | Completion      |
 
 **Group**
 | group_id 	| group_name          	| description                                                                 	|
