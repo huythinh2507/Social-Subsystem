@@ -50,18 +50,18 @@
 | 2         | 2       | 4      | Good experience overall. | 2024-06-11 11:00:00 |
 
 **Tag Table**
-| tag_name                | usage_count | last_used           |
-|-------------------------|-------------|---------------------|
-| Software Development    | 100         | 2024-06-10 10:00:00 |
-| Human Resources         | 50          | 2024-06-11 11:00:00 |
-| Marketing               | 75          | 2024-06-12 14:00:00 |
-| Data Science            | 120         | 2024-06-13 16:00:00 |
-| Machine Learning        | 85          | 2024-06-14 15:00:00 |
-| Artificial Intelligence | 90          | 2024-06-15 17:00:00 |
-| Cybersecurity           | 80          | 2024-06-16 18:00:00 |
-| Cloud Computing         | 95          | 2024-06-17 19:00:00 |
-| Web Development         | 110         | 2024-06-18 20:00:00 |
-| Mobile Development      | 105         | 2024-06-19 21:00:00 |
+| tag_id | tag_name                | usage_count | last_used           |
+|--------|-------------------------|-------------|---------------------|
+| 1      | Software Development    | 100         | 2024-06-10 10:00:00 |
+| 2      | Human Resources         | 50          | 2024-06-11 11:00:00 |
+| 3      | Marketing               | 75          | 2024-06-12 14:00:00 |
+| 4      | Data Science            | 120         | 2024-06-13 16:00:00 |
+| 5      | Machine Learning        | 85          | 2024-06-14 15:00:00 |
+| 6      | Artificial Intelligence | 90          | 2024-06-15 17:00:00 |
+| 7      | Cybersecurity           | 80          | 2024-06-16 18:00:00 |
+| 8      | Cloud Computing         | 95          | 2024-06-17 19:00:00 |
+| 9      | Web Development         | 110         | 2024-06-18 20:00:00 |
+| 10     | Mobile Development      | 105         | 2024-06-19 21:00:00 |
 
 **Challenges Table**
 | ChallengeID | UserID | Name                | Location        | Duration | StartTime           | Category    | Description                        | Phase           |
