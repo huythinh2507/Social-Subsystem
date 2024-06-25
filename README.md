@@ -8,3 +8,6 @@
 - [Case Study #6: Clique Bait](https://github.com/huythinh2507/Social-Subsystem/blob/main/SQL%20Challenges/Challenge6.md)
 - [Case Study #7: Balanced Tree](https://github.com/huythinh2507/Social-Subsystem/blob/main/SQL%20Challenges/Challenge7.md)
 - [Case Study #8: Fresh Segments](https://github.com/huythinh2507/Social-Subsystem/blob/main/SQL%20Challenges/Challenge8.md)
+
+## 📚 DBFiddle Link
+- [Used to write queries]((https://www.db-fiddle.com/f/tfc4ZBMQrio1iQr4e29guu/11))
