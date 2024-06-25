@@ -13,7 +13,7 @@ SELECT * FROM platform_rating WHERE rating - (SELECT MAX(rating) FROM platform_r
 **2. What are the trending tags of the website?**
 
 ````sql
-SELECT * FROM platform_rating WHERE rating - (SELECT MAX(rating) FROM platform_rating);
+SELECT * FROM tag ORDER BY usage_count DESC LIMIT 5;
 ````
 
 #### Answer:
