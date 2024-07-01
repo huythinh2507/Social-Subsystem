@@ -11,3 +11,4 @@
 
 ## 📚 DBFiddle Link
 - Download Power Point: [here](https://github.com/huythinh2507/Social-Subsystem/blob/main/main.pptx)
+- Sql Create&Insert: [here](https://github.com/huythinh2507/Social-Subsystem/blob/main/Create_Insert_Main.sql)
