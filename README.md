@@ -10,5 +10,4 @@
 - [Case Study #8: Fresh Segments](https://github.com/huythinh2507/Social-Subsystem/blob/main/SQL%20Challenges/Challenge8.md)
 
 ## 📚 DBFiddle Link
-- Used to write queries: https://www.db-fiddle.com/f/tfc4ZBMQrio1iQr4e29guu/24
 - Download Power Point here: [https://www.db-fiddle.com/f/tfc4ZBMQrio1iQr4e29guu/24](https://github.com/huythinh2507/Social-Subsystem/blob/main/main.pptx)
