@@ -15,20 +15,20 @@ CREATE TABLE [user] (
   skills NTEXT,
   experience NTEXT,
   education NTEXT,
-  Industry NVARCHAR(255),
+  industry_id INT,
   age INT,
   gender NVARCHAR(10),
   country NVARCHAR(10)
 );
 
 -- Insert sample data
-INSERT INTO [user] (email, password, name, location, role, profile_pic, is_open_to_work, phone_number, current_position, skills, experience, education, Industry)
+INSERT INTO [user] (email, password, name, location, role, profile_pic, is_open_to_work, phone_number, current_position, skills, experience, education, industry_id)
 VALUES
-  ('user1@example.com', 'password1', 'John Doe', 'Seattle', 'Developer', 'profile1.jpg', 1, '123-456-7890', 'Software Engineer', 'Java, Python', '3 years at Company X', 'BS in Computer Science', 'Tech'),
-  ('user2@example.com', 'password2', 'Jane Smith', 'New York', 'Designer', 'profile2.jpg', 0, '987-654-3210', 'UI/UX Designer', 'Photoshop, Sketch', 'Freelancer', 'BFA in Graphic Design', 'Tech'),
-  ('user3@example.com', 'password3', 'Alice Brown', 'Chicago', 'Data Analyst', 'profile3.jpg', 1, '555-789-1234', 'Data Science', 'R, SQL', '2 years at Data Co.', 'MS in Statistics', 'Tech'),
-  ('user4@example.com', 'password4', 'Bob Johnson', 'Los Angeles', 'Product Manager', 'profile4.jpg', 1, '111-222-3333', 'Product Strategy', 'Agile, Scrum', '5 years at Product Corp.', 'MBA', 'Business'),
-  ('user5@example.com', 'password5', 'Eva Lee', 'San Francisco', 'Marketing Specialist', 'profile5.jpg', 0, '444-555-6666', 'Digital Marketing', 'SEO, SEM', 'Marketing Agency', 'BA in Marketing', 'Marketing');
+  ('user1@example.com', 'password1', 'John Doe', 'Seattle', 'Developer', 'profile1.jpg', 1, '123-456-7890', 'Software Engineer', 'Java, Python', '3 years at Company X', 'BS in Computer Science', 1),
+  ('user2@example.com', 'password2', 'Jane Smith', 'New York', 'Designer', 'profile2.jpg', 0, '987-654-3210', 'UI/UX Designer', 'Photoshop, Sketch', 'Freelancer', 'BFA in Graphic Design', 1),
+  ('user3@example.com', 'password3', 'Alice Brown', 'Chicago', 'Data Analyst', 'profile3.jpg', 1, '555-789-1234', 'Data Science', 'R, SQL', '2 years at Data Co.', 'MS in Statistics', 1),
+  ('user4@example.com', 'password4', 'Bob Johnson', 'Los Angeles', 'Product Manager', 'profile4.jpg', 1, '111-222-3333', 'Product Strategy', 'Agile, Scrum', '5 years at Product Corp.', 'MBA', 2),
+  ('user5@example.com', 'password5', 'Eva Lee', 'San Francisco', 'Marketing Specialist', 'profile5.jpg', 0, '444-555-6666', 'Digital Marketing', 'SEO, SEM', 'Marketing Agency', 'BA in Marketing', 3);
 
 -- Update age and gender for specific users
 UPDATE [user]
@@ -152,20 +152,7 @@ VALUES
   -- Add more rows as needed
   (3, 3, 'Needs improvement', GETUTCDATE());
 
-  CREATE TABLE tag (
-  tag_id INT IDENTITY(1,1) PRIMARY KEY,
-  tag_name NVARCHAR(255),
-  usage_count INT,
-  last_used DATETIME DEFAULT (GETUTCDATE()),
-  Industry NVARCHAR(255)
-);
 
-INSERT INTO tag (tag_name, usage_count, last_used, industry)
-VALUES
-  ('programming', 10, GETUTCDATE(), 'Marketing'),
-  ('database', 5, GETUTCDATE(), 'Marketing'),
-  -- Add more rows as needed
-  ('web', 8, GETUTCDATE(), 'Marketing');
 
   CREATE TABLE challenge (
   ChallengeID INT IDENTITY(1,1) PRIMARY KEY,
@@ -361,3 +348,95 @@ VALUES
   (1, 'TechCorp', 'Software Engineer', 'Full-stack development', 'Seattle, WA', SYSDATETIME(), 'Technology'),
   (2, 'DesignCo', 'UI/UX Designer', 'Create stunning interfaces', 'New York, NY', SYSDATETIME(), 'Design')
 ;
+
+ALTER TABLE [user] DROP COLUMN Industry;
+
+CREATE TABLE industry (
+    id INT PRIMARY KEY,
+    industry_name VARCHAR(255),
+);
+
+INSERT INTO industry (id, industry_name)
+VALUES
+(1, 'Tech'),
+(2, 'Business'),
+(3, 'Marketing'),
+(4, 'Finance'),
+(5, 'Healthcare'),
+(6, 'Education'),
+(7, 'Retail'),
+(8, 'Manufacturing'),
+(9, 'Hospitality'),
+(10, 'Transportation'),
+(11, 'Entertainment'),
+(12, 'Energy'),
+(13, 'Telecommunications');
+
+CREATE TABLE user_industry (
+    industry_id INT,
+    user_id INT,
+	FOREIGN KEY (industry_id) REFERENCES industry(id),
+	FOREIGN KEY (user_id) REFERENCES [user](id)
+);
+
+INSERT INTO user_industry (industry_id, user_id)
+VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 4),
+(3, 5);
+
+CREATE TABLE tag (
+  tag_id INT IDENTITY(1,1) PRIMARY KEY,
+  tag_name NVARCHAR(255),
+  usage_count_in7day INT,
+  first_used DATETIME DEFAULT (GETUTCDATE()),
+  last_used DATETIME DEFAULT (GETUTCDATE()),
+  industry_id  INT REFERENCES industry(id)
+);
+
+INSERT INTO tag (tag_name, usage_count_in7day, first_used, last_used, industry_id)
+VALUES
+  ('#programming', 111110, '2024-07-03', GETUTCDATE(), 1),
+  ('#database', 2131235, '2024-07-03', GETUTCDATE(), 1),
+  ('#web', 123218, '2024-07-03', GETUTCDATE(), 1),
+  ('#cloud', 98765, '2024-07-03', GETUTCDATE(), 1),
+  ('#security', 54321, '2024-07-03', GETUTCDATE(), 1),
+  ('#frontend', 67890, '2024-07-03', GETUTCDATE(), 1),
+  ('#backend', 45678, '2024-07-03', GETUTCDATE(), 1),
+  ('#mobile', 23456, '2024-07-03', GETUTCDATE(), 1),
+  ('#data-science', 78901, '2024-07-03', GETUTCDATE(), 1),
+  ('#devops', 34567, '2024-07-03', GETUTCDATE(), 1);
+
+CREATE TABLE post_tag (tag_id INT, post_id INT);
+
+INSERT INTO post_tag (tag_id, post_id)
+VALUES
+  (1, 1),
+  (2, 1),
+  (3, 1),
+  (5, 1),
+  (4, 1),
+  (7, 1),
+  (1, 2),
+  (2, 2),
+  (3, 2),
+  (4, 2),
+  (1, 3),
+  (2, 3);
+
+  CREATE TABLE daily_tag_usage (
+  tag_id INT,
+  date DATE,
+  daily_usage_count INT,
+  PRIMARY KEY (tag_id, date)
+);
+
+-- Example data for daily_tag_usage
+INSERT INTO daily_tag_usage (tag_id, date, daily_usage_count)
+VALUES
+  (1, '2024-07-03', 100), -- #programming
+  (2, '2024-07-03', 200), -- #database
+  (3, '2024-07-03', 50),  -- #web
+  (10, '2024-07-03', 30); -- #devops
