@@ -1,5 +1,5 @@
 --trending hashtag
-'''sql
+```sql
 WITH RecentPosts AS (
     SELECT 
         p.id AS post_id,
@@ -49,4 +49,4 @@ INNER JOIN
     TagReactions tr ON t.id = tr.tag_id
 ORDER BY 
     tr.total_reactions DESC;
-'''
+```
