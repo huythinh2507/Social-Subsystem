@@ -1,6 +1,3 @@
--- Insert data into ImagesSystem
-
-
 -- Insert data into Jobtitle
 INSERT INTO Jobtitle (id, name)
 VALUES
@@ -103,11 +100,12 @@ VALUES
 -- Insert data into Category
 INSERT INTO Category (name)
 VALUES
-  ('Category 1'),
-  ('Category 2'),
-  ('Category 3'),
-  ('Category 4'),
-  ('Category 5');
+('Information Technology'),
+('UI/UX Design'),
+('Marketing'),
+('Lifestyle'),
+('Photography'),
+('Video');
 
 -- Insert data into Challenge
 INSERT INTO Challenge (id, user_id, category_id, challenge_name, description, location, phase, start_date)
