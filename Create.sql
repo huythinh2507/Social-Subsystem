@@ -13,12 +13,12 @@ CREATE TABLE Setting (
 );
 
 CREATE TABLE Jobtitle (
-   id INT NOT NULL PRIMARY KEY,
+   id INT NOT NULL PRIMARY KEY IDENTITY(1,1),
    name VARCHAR(255)
 );
 
 CREATE TABLE Location (
-   id INT NOT NULL PRIMARY KEY,
+   id INT NOT NULL PRIMARY KEY IDENTITY(1,1),
    name VARCHAR(255)
 );
 
@@ -103,7 +103,7 @@ CREATE TABLE Comment (
 );
 
 CREATE TABLE Tag (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY IDENTITY(1,1),
     tag_name VARCHAR(255)
 );
 
@@ -120,7 +120,7 @@ CREATE TABLE Category (
 );
 
 CREATE TABLE Challenge (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT FOREIGN KEY REFERENCES [user](id),
     category_id INT FOREIGN KEY REFERENCES category(id),
     name VARCHAR(255),
@@ -155,7 +155,7 @@ CREATE TABLE Experience (
 );
 
 CREATE TABLE University (
-    id INT NOT NULL PRIMARY KEY,
+    id INT NOT NULL PRIMARY KEY IDENTITY(1,1),
     name VARCHAR(255),
     img VARCHAR(255)
 );
