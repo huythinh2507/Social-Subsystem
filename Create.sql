@@ -45,8 +45,9 @@ CREATE TABLE UserSubscription (
 
 
 CREATE TABLE [User] (
-   id INT PRIMARY KEY,
+   id INT PRIMARY KEY IDENTITY(1,1),
    name VARCHAR(255),
+   asset_id INT, -- from the second table
    location_id INT,
    jobtitle_id INT,
    role_id INT,
@@ -54,12 +55,15 @@ CREATE TABLE [User] (
    age INT,
    gender VARCHAR(10),
    status BIT,
-   bio varchar(255),
-   profile_pic varchar(255),
+   bio VARCHAR(255), -- from the first table
+   profile_pic VARCHAR(255), -- from the first table
+   email VARCHAR(255), -- from the second table
+   dob DATE DEFAULT NULL, -- from the second table
    FOREIGN KEY (jobtitle_id) REFERENCES Jobtitle(id),
    FOREIGN KEY (location_id) REFERENCES Location(id),
-   FOREIGN KEY (industry_id) REFERENCES Industry(id),
+   FOREIGN KEY (role_id) REFERENCES Role(id),
 );
+
 
 CREATE TABLE [Post] (
   [id] int PRIMARY KEY,
@@ -117,15 +121,15 @@ CREATE TABLE Category (
 
 CREATE TABLE Challenge (
     id INT PRIMARY KEY,
-	user_id INT FOREIGN KEY REFERENCES [user](id),
+    user_id INT FOREIGN KEY REFERENCES [user](id),
     category_id INT FOREIGN KEY REFERENCES category(id),
     name VARCHAR(255),
     description VARCHAR(255),
     location VARCHAR(255),
     phase VARCHAR(255),
     start_date DATETIME,
-	images_id INT,
-	FOREIGN KEY (images_id) REFERENCES SourceImage(id)
+    images_id INT,
+    FOREIGN KEY (images_id) REFERENCES SourceImage(id)
 );
 
 CREATE TABLE Company (
