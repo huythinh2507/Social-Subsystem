@@ -1,29 +1,42 @@
 -- Insert data into Jobtitle
 INSERT INTO Jobtitle (id, name)
 VALUES
-  (1, 'Software Engineer'),
-  (2, 'Data Analyst'),
-  (3, 'UI/UX Designer'),
-  (4, 'HR Manager'),
-  (5, 'Marketing Specialist');
+('UI/UX Designer'),
+('Senior Software Engineer'),
+('CEO'),
+('Mentor'),
+('Data Scientist');
 
 -- Insert data into Location
-INSERT INTO Location (id, name)
+INSERT INTO Location (name)
 VALUES
-  (1, 'New York'),
-  (2, 'San Francisco'),
-  (3, 'London'),
-  (4, 'Tokyo'),
-  (5, 'Sydney');
+('Ho Chi Minh'),
+('New York'),
+('Ha Noi'),
+('Chicago');
 
 -- Insert data into User
-INSERT INTO [User] (id, name, location_id, jobtitle_id, role_id, create_at, age, gender, status, bio, profile_pic)
-VALUES
-  (1, 'John Doe', 1, 1, 1, '2024-07-11 12:00:00', 30, 'Male', 1, 'Software Engineer with 5+ years experience', 'https://example.com/profile_pic1'),
-  (2, 'Jane Smith', 2, 2, 2, '2024-07-10 12:00:00', 28, 'Female', 1, 'Data Analyst specializing in Python and SQL', 'https://example.com/profile_pic2'),
-  (3, 'Michael Johnson', 3, 3, 3, '2024-07-09 12:00:00', 35, 'Male', 1, 'Experienced UI/UX Designer with a focus on Adobe XD', 'https://example.com/profile_pic3'),
-  (4, 'Emily Brown', 4, 4, 4, '2024-07-08 12:00:00', 32, 'Female', 1, 'HR Manager with expertise in recruitment and employee relations', 'https://example.com/profile_pic4'),
-  (5, 'David Wilson', 5, 5, 5, '2024-07-07 12:00:00', 29, 'Male', 1, 'Marketing Specialist with 6+ years in digital marketing', 'https://example.com/profile_pic5');
+INSERT INTO [User] (name, asset_id, location_id, jobtitle_id, role_id, create_at, age, gender, status, email, dob, bio, profile_pic) VALUES 
+('John Doe', 1, 1, 1, 1, '2024-07-01 08:00:00', 40, 'Male', 1, 'zleffler@example.com', GETDATE(), 'Bio for John Doe', 'profile_john.jpg'),
+('Alice Smith', 2, 2, 2, 2, '2024-07-07 08:00:00', 35, 'Female', 1, 'brian59@example.com', GETDATE(), 'Bio for Alice Smith', 'profile_alice.jpg'),
+('Bob Johnson', 3, 3, 3, 2, '2024-07-07 08:00:00', 36, 'Male', 1, 'jaquan94@example.com', GETDATE(), 'Bio for Bob Johnson', 'profile_bob.jpg'),
+('Carol White', 4, 4, 4, 2, '2024-07-07 08:00:00', 37, 'Female', 1, 'brook64@example.net', GETDATE(), 'Bio for Carol White', 'profile_carol.jpg'),
+('David Brown', 5, 1, 5, 2, '2024-07-07 08:00:00', 38, 'Male', 1, 'lynch.daisy@example.com', GETDATE(), 'Bio for David Brown', 'profile_david.jpg'),
+('Eve Black', 6, 2, 1, 2, '2024-07-07 08:00:00', 39, 'Female', 1, 'jerome.mccullough@example.com', GETDATE(), 'Bio for Eve Black', 'profile_eve.jpg'),
+('Frank Green', 7, 3, 2, 3, '2024-07-07 08:00:00', 20, 'Male', 1, 'eusebio.cartwright@example.org', GETDATE(), 'Bio for Frank Green', 'profile_frank.jpg'),
+('Grace Lee', 8, 4, 3, 3, '2024-07-07 08:00:00', 21, 'Female', 1, 'megane42@example.net', GETDATE(), 'Bio for Grace Lee', 'profile_grace.jpg'),
+('Hank Martin', 9, 1, 4, 3, '2024-07-07 08:00:00', 22, 'Male', 1, 'tfahey@example.org', GETDATE(), 'Bio for Hank Martin', 'profile_hank.jpg'),
+('Ivy Clark', 10, 2, 5, 3, '2024-7-07 08:00:00', 23, 'Female', 1, 'christiansen.nico@example.org', GETDATE(), 'Bio for Ivy Clark', 'profile_ivy.jpg'),
+('Jack Walker', 11, 3, 1, 3, '2024-07-07 08:00:00', 24, 'Male', 1, 'ehegmann@example.com', GETDATE(), 'Bio for Jack Walker', 'profile_jack.jpg'),
+('Kara Adams', 12, 4, 2, 3, '2024-07-07 08:00:00', 25, 'Female', 1, 'harber.kiera@example.com', GETDATE(), 'Bio for Kara Adams', 'profile_kara.jpg'),
+('Liam Young', 13, 1, 3, 3, '2024-07-07 08:00:00', 26, 'Male', 1, 'zaria19@example.org', GETDATE(), 'Bio for Liam Young', 'profile_liam.jpg'),
+('Mia King', 14, 2, 4, 3, '2024-07-07 08:00:00', 27, 'Female', 1, 'dion.muller@example.org', GETDATE(), 'Bio for Mia King', 'profile_mia.jpg'),
+('Noah Scott', 15, 3, 5, 3, '2024-07-07 08:00:00', 28, 'Male', 1, 'blair54@example.com', GETDATE(), 'Bio for Noah Scott', 'profile_noah.jpg'),
+('Olivia Baker', 16, 4, 1, 3, '2024-07-07 08:00:00', 29, 'Female', 1, 'wanda.herman@example.net', GETDATE(), 'Bio for Olivia Baker', 'profile_olivia.jpg'),
+('Carol', 9, 1, 4, 3, '2024-07-07 08:00:00', 22, 'Male', 1, 'pmuller@example.com', GETDATE(), 'Bio for Carol', 'profile_carol2.jpg'),
+('Martin', 7, 3, 2, 3, '2024-07-07 08:00:00', 20, 'Male', 1, 'aubree.emard@example.org', GETDATE(), 'Bio for Martin', 'profile_martin.jpg'),
+('White', 6, 2, 1, 2, '2024-07-07 08:00:00', 39, 'Female', 1, 'sallie.crist@example.com', GETDATE(), 'Bio for White', 'profile_white.jpg');
+
 
 -- Insert data into Image
 INSERT INTO Image (image_url)
@@ -80,13 +93,29 @@ VALUES
   (5, 5);
 
 -- Insert data into Tag
-INSERT INTO Tag (id, tag_name)
+INSERT INTO Tag (tag_name)
 VALUES
-  (1, 'Tag 1'),
-  (2, 'Tag 2'),
-  (3, 'Tag 3'),
-  (4, 'Tag 4'),
-  (5, 'Tag 5');
+('Python'),
+('Data Science'),
+('Selenium'),
+('Web Development'),
+('React'),
+('React Router'),
+('Redux'),
+('NextJS'),
+('React Native'),
+('Jupyter Notebook'),
+('Machine Learning'),
+('Cloud Computing'),
+('Cybersecurity'),
+('Java'),
+('Blockchain'),
+('Cryptocurrency'),
+('Artificial Intelligence'),
+('Project Management'),
+('UX Design'),
+('Flutter'),
+('DevOps');
 
 -- Insert data into TagPost
 INSERT INTO TagPost (post_id, tag_id)
@@ -108,13 +137,23 @@ VALUES
 ('Video');
 
 -- Insert data into Challenge
-INSERT INTO Challenge (id, user_id, category_id, challenge_name, description, location, phase, start_date)
+INSERT INTO Challenge (user_id, category_id, challenge_name, description, location, phase, start_date)
 VALUES
-  (1, 1, 1, 'Challenge 1', 'Description for Challenge 1', 'Location for Challenge 1', 'Phase 1', '2024-07-11'),
-  (2, 2, 2, 'Challenge 2', 'Description for Challenge 2', 'Location for Challenge 2', 'Phase 2', '2024-07-10'),
-  (3, 3, 3, 'Challenge 3', 'Description for Challenge 3', 'Location for Challenge 3', 'Phase 3', '2024-07-09'),
-  (4, 4, 4, 'Challenge 4', 'Description for Challenge 4', 'Location for Challenge 4', 'Phase 4', '2024-07-08'),
-  (5, 5, 5, 'Challenge 5', 'Description for Challenge 5', 'Location for Challenge 5', 'Phase 5', '2024-07-07');
+(1,1, 'Image Classification', 'The challenge is to develop a deep learning model', 'Remote', 'Starting Phase', '2024-06-26'),
+(2,1, 'Fraud Detection Kaggle', 'Participate in a Kaggle competition', 'HCM', 'Starting Phase', '2024-06-27'),
+(3,5, 'Short Story Writing', 'Writing a compelling short story', 'Remote', 'Starting Phase', '2024-06-23'),
+(1,1, 'Data Prediction', 'Predicting data trends using ML', 'Remote', 'Ending Phase', '2024-06-27'),
+(2, 5, 'Recipe Development', 'Creating new and innovative recipes', 'Remote', 'Ending Phase', '2024-06-23'),
+(1, 1, 'E-commerce Website', 'Develop a full-stack e-commerce website', 'Remote', 'Starting Phase', '2024-07-01'),
+(2, 1, 'Sentiment Analysis', 'Analyze sentiment from social media data', 'Remote', 'Starting Phase', '2024-07-01'),
+(3, 2, 'Mobile App Design', 'Design a mobile app for a retail store', 'Remote', 'Starting Phase', '2024-07-01'),
+(3,3, 'Email Marketing Campaign', 'Create an effective email marketing campaign', 'Remote', 'Starting Phase', '2024-07-01'),
+(2,4, 'Personal Finance Blog', 'Write blog posts about personal finance', 'Remote', 'Starting Phase', '2024-07-01'),
+(5,5, 'Food Photography', 'Capture high-quality photos of food dishes', 'Remote', 'Starting Phase', '2024-07-01'),
+(1,6, 'Short Film Editing', 'Edit a short film with provided footage', 'Remote', 'Starting Phase', '2024-07-01'),
+(2,1, 'Real-time Chat Application', 'Build a real-time chat application', 'Remote', 'Starting Phase', '2024-07-01'),
+(3,2, 'Landing Page Optimization', 'Optimize the landing page of a website', 'Remote', 'Starting Phase', '2024-07-01'),
+(6,5, 'Travel Vlog', 'Create a travel vlog with provided footage', 'Remote', 'Starting Phase', '2024-07-01');
 -- Insert data into Company
 INSERT INTO Company (id, name, img)
 VALUES
@@ -137,19 +176,17 @@ VALUES
 INSERT INTO Experience (id, jobtitle_id, company_id, type_id, user_id, isworking)
 VALUES
   (1, 1, 1, 1, 1, 1),
-  (2, 2, 2, 2, 2, 1),
+  (3, 2, 2, 2, 1, 1),
   (3, 3, 3, 3, 3, 0),
   (4, 4, 4, 4, 4, 1),
   (5, 5, 5, 5, 5, 0);
 
 -- Insert data into University
-INSERT INTO University (id, name, img)
+INSERT INTO University (name, img)
 VALUES
-  (1, 'University A', 'https://example.com/university_a_logo'),
-  (2, 'University B', 'https://example.com/university_b_logo'),
-  (3, 'University C', 'https://example.com/university_c_logo'),
-  (4, 'University D', 'https://example.com/university_d_logo'),
-  (5, 'University E', 'https://example.com/university_e_logo');
+('HCMC University of Technology and Education', 'link'),
+('Harvard University', 'link'),
+('Boston University', 'link');
 
 -- Insert data into Education
 INSERT INTO Education (id, degree, university_id, user_id)
